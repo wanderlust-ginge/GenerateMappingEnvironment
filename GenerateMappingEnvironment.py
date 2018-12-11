@@ -24,7 +24,7 @@ class GitRepo:
     def GitPath(self):
         return self.host + ":" + self.organization + "/" + self.project
 
-def GenerateMappingEnvironment(git_repo, dir_name= "c:\\Starcounter", app_name = "UserAdmin"):
+def GenerateMappingEnvironment(dir_name= "c:\\Starcounter", app_name = "AppName", git_repo = GitRepo()):
     error_log = ErrorLog()
     main_dir_path = join(dir_name, app_name, 'src', app_name + ".Mapper")
     replaceable_dir_path = join(common_file_path, 'replaceable')
@@ -113,7 +113,7 @@ def FixStupidSolutionFile(proj_name, root_dir):
 
 error_log = ErrorLog()
 error_log.ClearErrorLog()
-GenerateMappingEnvironment(GitRepo())
+GenerateMappingEnvironment()
 
 
 
