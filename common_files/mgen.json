@@ -1,0 +1,9 @@
+{
+    "appAssembly": "..\\$app$\\bin\\$config$\\$app$.exe",
+    "mapperSources": [
+        "*.cpp"
+    ],
+    "mapperOutput": "..\\$app$\\bin\\$config$\\$app$.map.cpp",
+    "mappings": [],
+    "extends": "$mbase$\\mgen.json"
+}
