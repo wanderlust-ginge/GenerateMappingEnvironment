@@ -5,7 +5,7 @@ import subprocess
 
 from ErrorLog import ErrorLog
 
-common_file_path = os.getcwd() + "\\common_files"
+common_file_path = os.getcwd() + "/common_files"
 
 class GitRepo:
     def __init__(self, project, host="git@github.com", organization="Starcounter"):
@@ -24,24 +24,25 @@ class GitRepo:
     def GitPath(self):
         return self.host + ":" + self.organization + "/" + self.project
 
-def GenerateMappingEnvironment(dir_name= "c:\\Starcounter", app_name = "AppName", git_repo = GitRepo()):
+def GenerateMappingEnvironment(dir_path = "c:/Starcounter/AppName", git_repo = GitRepo()):
     error_log = ErrorLog()
-    main_dir_path = join(dir_name, app_name, 'src', app_name + ".Mapper")
+    app_name = dir_path.split('/')[-1]
+    mapping_dir_path = join(dir_path, 'src', app_name + ".Mapper")
     replaceable_dir_path = join(common_file_path, 'replaceable')
 
     git_repo.SetProject(app_name)
 
-    if not os.path.exists(main_dir_path):
+    if not os.path.exists(mapping_dir_path):
         try:
-            os.makedirs(main_dir_path)
+            os.makedirs(mapping_dir_path)
         except OSError:
             error_log.LogError("Creation of Mapper directory failed.  Check permissions and try again")
             return
 
-    AddMainDirCommonFile(main_dir_path)
-    AddCustomFile(replaceable_dir_path, 'AppName.Mapper.csproj', app_name, main_dir_path)
-    AddSharedSubmodule(main_dir_path)
-    AddMapperProjToSolution(app_name, dir_name)
+    AddMainDirCommonFile(mapping_dir_path)
+    AddCustomFile(replaceable_dir_path, 'AppName.Mapper.csproj', app_name, mapping_dir_path)
+    AddSharedSubmodule(mapping_dir_path)
+    AddMapperProjToSolution(app_name, dir_path)
 
 def AddMainDirCommonFile(dst_path):
     dir_contents = os.listdir(common_file_path)
@@ -69,9 +70,9 @@ def AddCustomFile(src_dir, file_name, replace_value, dst_dir):
         error_log.LogError("Unable to create custom file " + file_name + " with replace value " + replace_value)
 
 
-def AddSharedSubmodule(main_dir_path):
+def AddSharedSubmodule(mapping_dir_path):
     error_log = ErrorLog()
-    bat_file_path = join(main_dir_path, 'add_shared.bat')
+    bat_file_path = join(mapping_dir_path, 'add_shared.bat')
     try:
         subprocess.call([bat_file_path])
     except:
@@ -80,8 +81,9 @@ def AddSharedSubmodule(main_dir_path):
     return
 
 def AddMapperProjToSolution(proj_name, root_dir):
-    bat_file_path = join(root_dir, proj_name, 'add_project.bat')
-    AddCustomFile(join(common_file_path, 'replaceable'), 'add_project.bat', proj_name, join(root_dir, proj_name))
+    error_log = ErrorLog()
+    bat_file_path = join(root_dir, 'add_project.bat')
+    AddCustomFile(join(common_file_path, 'replaceable'), 'add_project.bat', proj_name, root_dir)
     try:
         subprocess.call([bat_file_path])
     except:
@@ -91,8 +93,8 @@ def AddMapperProjToSolution(proj_name, root_dir):
 
 def FixStupidSolutionFile(proj_name, root_dir):
     error_log = ErrorLog()
-    temp_sln_file_path = join(root_dir, proj_name, proj_name + "_temp.sln")
-    sln_file_path = join(root_dir, proj_name, proj_name + ".sln")
+    temp_sln_file_path = join(root_dir, proj_name + "_temp.sln")
+    sln_file_path = join(root_dir, proj_name + ".sln")
     os.rename(sln_file_path, temp_sln_file_path)
     try:
         with open(temp_sln_file_path) as sln_file:
